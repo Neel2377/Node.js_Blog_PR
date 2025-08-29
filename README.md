@@ -11,7 +11,7 @@ A full-featured blog platform built with Node.js, Express, MongoDB, and EJS. Thi
 - DataTables for admin/user management
 
 ## Deploy Link
-- Link: 
+- Link: https://node-js-blog-pr.onrender.com/
 
 ## Project Structure
 ```
