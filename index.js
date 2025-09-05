@@ -1,5 +1,6 @@
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const passport = require('./middlewares/passport'); // import passport config
 require("dotenv").config({ quiet: true });
 const express = require('express');
 const db = require('./configs/db');
@@ -8,14 +9,12 @@ const path = require('path');
 const router = require('./routers');
 const MongoStore = require('connect-mongo');
 
-
 const port = process.env.port || 8081;
-require('dotenv').config();
-
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
@@ -23,6 +22,10 @@ app.use(session({
     store: MongoStore.create({ mongoUrl: process.env.DB_URL }),
     cookie: { maxAge: 1000 * 60 * 60 * 24 }
 }));
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store');
@@ -39,4 +42,4 @@ app.listen(port, () => {
         console.log("Server not online");
         console.log(error.message);
     }
-})
+});

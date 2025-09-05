@@ -1,23 +1,42 @@
 const express = require('express');
 const router = express.Router();
+const passport = require('../middlewares/passport');
 const userController = require('../controllers/userController');
 
-// Create user
+// Register user
 router.post('/', userController.createUser);
-// Get all users
+
+// Login route (Passport local strategy)
+router.post('/login',
+  passport.authenticate('local', {
+    successRedirect: '/profile',
+    failureRedirect: '/login',
+    failureFlash: false // you can enable flash messages if needed
+  })
+);
+
+// Logout route
+router.get('/logout', (req, res) => {
+  req.logout(err => {
+    if (err) return next(err);
+    res.redirect('/login');
+  });
+});
+
+// Get all users (protected)
 router.get('/', userController.getUsers);
 
-// User management page (EJS view)
+// User management page
 router.get('/manage', userController.userManagementPage);
-// User profile routes
-router.get('/profile', userController.profilePage);
-router.put('/profile', userController.updateProfile);
-router.delete('/profile', userController.deleteProfile);
-// Get single user
+
+// Profile routes (protected)
+router.get('/profile', require('../middlewares/auth').isAuth, userController.profilePage);
+router.put('/profile', require('../middlewares/auth').isAuth, userController.updateProfile);
+router.delete('/profile', require('../middlewares/auth').isAuth, userController.deleteProfile);
+
+// Single user CRUD
 router.get('/:id', userController.getUser);
-// Update user
 router.put('/:id', userController.updateUser);
-// Delete user
 router.delete('/:id', userController.deleteUser);
 
 module.exports = router;
