@@ -105,7 +105,7 @@
             <div class="post-title"><a href="/posts/<%= post._id %>" class="text-dark text-decoration-none"><%= post.title %></a></div>
             <div class="post-meta">by <%= post.author?.username || 'Unknown' %> &middot; <%= post.createdAt ? post.createdAt.toLocaleDateString() : '' %></div>
             <div class="post-excerpt"><%= post.excerpt || '' %></div>
-            <a href="/posts/<%= post._id %>" class="read-link">Read More &rarr;</a>
+            <a href="/blog/posts/<%= post._id %>" class="read-link">Read More &rarr;</a>
           </div>
         <% }) %>
       <% } else { %>
