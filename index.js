@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const passport = require('./middlewares/passport'); // import passport config
+const passport = require('./middlewares/passport');
+const postRoutes = require('./routers/post.routes'); 
 require("dotenv").config({ quiet: true });
 const express = require('express');
 const db = require('./configs/db');
@@ -33,6 +34,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/', router);
+app.use('/blog/posts', postRoutes);
 
 app.listen(port, () => {
     try {

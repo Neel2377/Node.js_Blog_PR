@@ -7,14 +7,13 @@ exports.feed = async (req, res) => {
   const posts = await Post.find(filter)
     .populate('author', 'username')
     .sort({ createdAt: -1 });
-  // Get unique categories from all posts (not just filtered)
   const allPosts = await Post.find();
   const categories = Array.from(new Set(allPosts.map(p => p.category).filter(Boolean)));
   res.render('./pages/blog/blogHome', { posts, categories, category });
 };
 
 exports.createForm = (req, res) => {
-  res.render('./pages/writer/writerHome'); // contains the create-post form
+  res.render('./pages/writer/writerHome'); 
 };
 
 exports.create = async (req, res) => {
@@ -27,8 +26,8 @@ exports.create = async (req, res) => {
       author: req.session.userId
     });
     if (req.file) {
-      post.coverUrl = req.file.path;        // cloudinary url
-      post.coverPublicId = req.file.filename; // public id
+      post.coverUrl = req.file.path;        
+      post.coverPublicId = req.file.filename; 
     }
     await post.save();
     res.redirect('/blog');
@@ -39,11 +38,22 @@ exports.create = async (req, res) => {
 };
 
 exports.show = async (req, res) => {
-  const post = await Post.findById(req.params.id)
-    .populate('author', 'username')
-    .populate('comments.author', 'username');
-  if (!post) return res.redirect('/blog');
-  res.render('./pages/blog/post', { post, me: req.session.userId });
+  const { id } = req.params;
+  try {
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.redirect('/blog'); 
+    }
+    const post = await Post.findById(id)
+      .populate('author', 'username')
+      .populate('comments.author', 'username');
+    if (!post) {
+      return res.redirect('/blog'); 
+    }
+    res.render('./pages/blog/post', { post, me: req.session.userId });
+  } catch (error) {
+    console.error('Error fetching post:', error);
+    res.status(500).send('Server Error');
+  }
 };
 
 exports.toggleLike = async (req, res) => {
